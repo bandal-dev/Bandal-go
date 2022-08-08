@@ -55,6 +55,7 @@ const (
 	AND      = "AND"
 	OR       = "OR"
 
+	INT   = "INT"
 	INT8  = "INT8"
 	INT16 = "INT16"
 	INT32 = "INT32" //TODO-------------------------------------add more tokens by doing nogada

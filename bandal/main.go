@@ -2,19 +2,28 @@ package main
 
 import (
 	"fmt"
-	"bandal/parser"
-	"bandal/compile"
+	"go/token"
+
+	"github.com/Bandal-dev/Bandal-go/bandal/lexer"
 )
 
-//To Do -> argparse
-var source string = 
-`fn main()
-	pass
+//source code here
+
+var source string = `
+false
+true
+if
+wllse
+else
+2134
+k 1 
+rl1w
 `
 
+var l []token.Token = lexer.Lex(source)
+
 func main() {
-	var ret "parser type" = compile.Compile(source, true)
-	if ret != nil {
-		//pickle
+	for _, i := range l {
+		fmt.Println(i)
 	}
 }

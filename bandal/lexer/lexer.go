@@ -1,6 +1,6 @@
 package lexer
 
-import "bandal/token"
+import "github.com/Bandal-dev/Bandal-go/bandal/token"
 
 type Lexer struct {
 	source string //input source code
@@ -16,59 +16,64 @@ func Lex(input string) []token.Token {
 	l := &Lexer{source: input}
 	l.Advance()
 	for !l.IsEnd() {
-		l.ScanToken()
+		l.NextToken()
 	}
 	return l.tokens
 }
 
-func (l *Lexer) ScanToken() {
-
+func (l *Lexer) NextToken() token.Token {
+	var ret token.Token
 	switch l.ch {
 	case '(':
-		l.AddToken(token.LeftParen, l.ch)
+		ret = l.AddToken(token.LeftParen, l.ch)
 	case ')':
-		l.AddToken(token.RightParen, l.ch)
+		ret = l.AddToken(token.RightParen, l.ch)
 	case '{':
-		l.AddToken(token.LeftBrace, l.ch)
+		ret = l.AddToken(token.LeftBrace, l.ch)
 	case '}':
-		l.AddToken(token.RightBrace, l.ch)
+		ret = l.AddToken(token.RightBrace, l.ch)
 	case '[':
-		l.AddToken(token.LeftBracket, l.ch)
+		ret = l.AddToken(token.LeftBracket, l.ch)
 	case ']':
-		l.AddToken(token.RightBracket, l.ch)
+		ret = l.AddToken(token.RightBracket, l.ch)
 	case ',':
-		l.AddToken(token.Comma, l.ch)
+		ret = l.AddToken(token.Comma, l.ch)
 	case '.':
-		l.AddToken(token.Dot, l.ch)
+		ret = l.AddToken(token.Dot, l.ch)
 	case '+':
-		l.AddToken(token.Plus, l.ch)
+		ret = l.AddToken(token.Plus, l.ch)
 	case '-':
-		l.AddToken(token.Minus, l.ch)
+		ret = l.AddToken(token.Minus, l.ch)
 
 	case '=':
 		if l.Peek() == '=' {
 			ch := l.ch
 			l.Advance()
-			l.tokens = append(l.tokens, token.Token{Type: token.EqualEqual, Literal: string(ch) + string(l.ch)})
+			ret = token.Token{Type: token.EqualEqual, Literal: string(ch) + string(l.ch)}
 		} else {
-			l.AddToken(token.Equal, l.ch)
+			ret = l.AddToken(token.Equal, l.ch)
 		}
 
 	default:
 		if IsLetter(l.ch) {
-			var tok token.Token
-			tok.Literal = l.Identifier()
-			tok.Type = token.LookUpIdent(tok.Literal)
-			l.tokens = append(l.tokens, tok)
+			ret.Literal = l.Identifier()
+			ret.Type = token.LookUpIdent(ret.Literal)
+			return ret
+		} else if IsDigit(l.ch) {
+			ret.Literal = l.Number()
+			ret.Type = token.INT
+			return ret
 		} else {
-			l.AddToken(token.Undefined, l.ch)
+			ret = l.AddToken(token.Undefined, l.ch)
+
 		}
 	}
 	l.Advance()
+	return ret
 }
 
-func (l *Lexer) AddToken(tokentype token.TokenType, ch byte) {
-	l.tokens = append(l.tokens, token.Token{Type: tokentype, Literal: string(ch)})
+func (l *Lexer) AddToken(tokentype token.TokenType, ch byte) token.Token {
+	return token.Token{Type: tokentype, Literal: string(ch)}
 
 }
 

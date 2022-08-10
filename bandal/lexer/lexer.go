@@ -7,52 +7,69 @@ type Lexer struct {
 	//start    int
 	position int
 	current  int
+
 	//line     int
-	tokens []token.Token
-	ch     byte
+	ch byte
 }
 
-func Lex(input string) []token.Token {
+func Lex(input string) *Lexer {
 	l := &Lexer{source: input}
 	l.Advance()
-	for !l.IsEnd() {
-		l.NextToken()
-	}
-	return l.tokens
+	return l
 }
 
 func (l *Lexer) NextToken() token.Token {
 	var ret token.Token
+	l.Space()
+
 	switch l.ch {
 	case '(':
-		ret = l.AddToken(token.LeftParen, l.ch)
+		ret = AddToken(token.LeftParen, l.ch)
 	case ')':
-		ret = l.AddToken(token.RightParen, l.ch)
+		ret = AddToken(token.RightParen, l.ch)
 	case '{':
-		ret = l.AddToken(token.LeftBrace, l.ch)
+		ret = AddToken(token.LeftBrace, l.ch)
 	case '}':
-		ret = l.AddToken(token.RightBrace, l.ch)
+		ret = AddToken(token.RightBrace, l.ch)
 	case '[':
-		ret = l.AddToken(token.LeftBracket, l.ch)
+		ret = AddToken(token.LeftBracket, l.ch)
 	case ']':
-		ret = l.AddToken(token.RightBracket, l.ch)
+		ret = AddToken(token.RightBracket, l.ch)
 	case ',':
-		ret = l.AddToken(token.Comma, l.ch)
+		ret = AddToken(token.Comma, l.ch)
 	case '.':
-		ret = l.AddToken(token.Dot, l.ch)
+		ret = AddToken(token.Dot, l.ch)
 	case '+':
-		ret = l.AddToken(token.Plus, l.ch)
-	case '-':
-		ret = l.AddToken(token.Minus, l.ch)
-
+		ret = AddToken(token.Plus, l.ch)
+	case ':':
+		ret = AddToken(token.Colon, l.ch)
+	case ';':
+		ret = AddToken(token.SemiColon, l.ch)
+	case '*':
+		ret = AddToken(token.Star, l.ch)
+	case '^':
+		ret = AddToken(token.Caret, l.ch)
+	case '~':
+		ret = AddToken(token.Tilde, l.ch)
+	case '/':
+		ret = AddToken(token.Slash, l.ch)
+	//case '//':
+	//	ret = AddToken(token.SlashSlash, l.ch)
+	case '%':
+		ret = AddToken(token.Percent, l.ch)
+	case '_':
+		ret = AddToken(token.Underbar, l.ch)
 	case '=':
 		if l.Peek() == '=' {
 			ch := l.ch
 			l.Advance()
 			ret = token.Token{Type: token.EqualEqual, Literal: string(ch) + string(l.ch)}
 		} else {
-			ret = l.AddToken(token.Equal, l.ch)
+			ret = AddToken(token.Equal, l.ch)
 		}
+	case 0:
+		ret.Literal = ""
+		ret.Type = token.EOF
 
 	default:
 		if IsLetter(l.ch) {
@@ -64,7 +81,7 @@ func (l *Lexer) NextToken() token.Token {
 			ret.Type = token.INT
 			return ret
 		} else {
-			ret = l.AddToken(token.Undefined, l.ch)
+			ret = AddToken(token.Undefined, l.ch)
 
 		}
 	}
@@ -72,7 +89,7 @@ func (l *Lexer) NextToken() token.Token {
 	return ret
 }
 
-func (l *Lexer) AddToken(tokentype token.TokenType, ch byte) token.Token {
+func AddToken(tokentype token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokentype, Literal: string(ch)}
 
 }
@@ -120,5 +137,11 @@ func (l *Lexer) Peek() byte {
 		return 0
 	} else {
 		return l.source[l.current]
+	}
+}
+
+func (l *Lexer) Space() {
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\r' || l.ch == '\n' {
+		l.Advance()
 	}
 }

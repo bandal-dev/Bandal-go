@@ -3,7 +3,6 @@ package parser
 import (
 	"testing"
 
-	"github.com/Bandal-dev/Bandal-go/bandal/ast"
 	"github.com/Bandal-dev/Bandal-go/bandal/lexer"
 )
 
@@ -21,7 +20,7 @@ func TestLetStatements(t *testing.T) {
 	if program == nil {
 		t.Fatalf("nill")
 	}
-	
+
 	tests := []struct {
 		expectedIdentifier string
 	}{
@@ -36,7 +35,4 @@ func TestLetStatements(t *testing.T) {
 			return
 		}
 	}
-}
-func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
-	if s.TokenLiteral() != 
 }

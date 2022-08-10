@@ -1,29 +1,22 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"go/token"
+	"os"
+	"os/user"
 
-	"github.com/Bandal-dev/Bandal-go/bandal/lexer"
+	"github.com/Bandal-dev/Bandal-go/bandal/repl"
 )
 
 //source code here
-
-var source string = `
-false
-true
-if
-wllse
-else
-2134
-k 1 
-rl1w
-`
-
-var l []token.Token = lexer.Lex(source)
+var errUser error = errors.New("ERROR")
 
 func main() {
-	for _, i := range l {
-		fmt.Println(i)
+	_, err := user.Current()
+	if err != nil {
+		panic(errUser)
 	}
+	fmt.Printf("BanDal Beta REPL")
+	repl.Start(os.Stdin, os.Stdout)
 }
